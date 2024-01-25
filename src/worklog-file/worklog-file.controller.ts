@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Res,
   Header,
+  Logger,
 } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -15,7 +16,11 @@ import { Response } from 'express';
 
 @Controller('worklogFile')
 export class WorklogFileController {
-  constructor(private readonly worklogFileService: WorklogFileService) {}
+  logger: Logger;
+
+  constructor(private readonly worklogFileService: WorklogFileService) {
+    this.logger = new Logger('WorklogFileController');
+  }
 
   @Post('generateFile')
   @Header('Content-Type', 'text/xlsx')
@@ -39,6 +44,7 @@ export class WorklogFileController {
     file: Express.Multer.File,
   ) {
     let result = await this.worklogFileService.generateWorklog(file);
+    this.logger.log('Download Successful')
     res.download(`${result}`);
   }
 }
